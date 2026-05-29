@@ -1,0 +1,674 @@
+/* ================================================
+   style.css - تم کامل کافه دلنشین
+   تمام استایل‌ها از این فایل گرفته میشه
+   ================================================ */
+
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+
+/* ========== تنظیمات پایه ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Vazirmatn', 'Tahoma', system-ui, sans-serif;
+    direction: rtl;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    min-height: 100vh;
+}
+
+/* ========== اسکرول بار ========== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #e0f2fe;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+/* ========== انیمیشن‌ها ========== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4); }
+    100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+}
+
+@keyframes textGlow {
+    0% { text-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+    50% { text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+    100% { text-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ========== کلاس‌های انیمیشن ========== */
+.fade-in-up { animation: fadeInUp 0.6s ease-out; }
+.slide-in-right { animation: slideInRight 0.5s ease-out; }
+.glow { animation: glow 2s ease-in-out infinite; }
+.text-glow { animation: textGlow 2s ease-in-out infinite; }
+.float { animation: float 3s ease-in-out infinite; }
+
+/* ========== هدر ========== */
+.main-header {
+    background: linear-gradient(135deg, #0e2157, #2563eb);
+    color: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 16px 20px;
+}
+
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo i {
+    font-size: 28px;
+}
+
+.header-logo h1 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.header-btn {
+    padding: 8px 20px;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-btn-feedback {
+    background: #3b82f6;
+    color: white;
+}
+
+.header-btn-feedback:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+.header-btn-login {
+    background: #374151;
+    color: white;
+}
+
+.header-btn-login:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+/* ========== بنر تبلیغاتی ========== */
+.promo-banner {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* ========== کانتینر اصلی ========== */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+
+/* ========== عنوان صفحه ========== */
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title h2 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.page-title .title-line {
+    width: 96px;
+    height: 4px;
+    background: #3b82f6;
+    margin: 0 auto;
+    border-radius: 9999px;
+}
+
+.page-title p {
+    color: #6b7280;
+    margin-top: 12px;
+}
+
+/* ========== گرید محصولات ========== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+}
+
+/* ========== کارت محصول ========== */
+.product-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.product-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.product-image-placeholder {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image-placeholder i {
+    font-size: 64px;
+    color: #2563eb;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.product-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1f2937;
+}
+
+.product-price {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.product-description {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ========== فوتر ========== */
+.main-footer {
+    background: #111827;
+    color: white;
+    margin-top: 60px;
+    padding: 32px 20px;
+    text-align: center;
+}
+
+.main-footer i {
+    font-size: 32px;
+    color: #3b82f6;
+    margin-bottom: 12px;
+}
+
+.main-footer p {
+    margin: 8px 0;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: white;
+    text-decoration: none;
+}
+
+.social-link:hover {
+    background: #2563eb;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+/* ========== دکمه بازگشت به بالا ========== */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+    border: none;
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+/* ========== فرم‌ها (برای feedback و login) ========== */
+.form-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 24px;
+    text-align: center;
+}
+
+.form-header i {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.form-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.form-header p {
+    color: #bfdbfe;
+    margin-top: 8px;
+}
+
+.form-body {
+    padding: 32px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.form-group label i {
+    margin-left: 8px;
+    color: #3b82f6;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #3b82f6;
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    color: #2563eb;
+    transform: translateX(-4px);
+}
+
+/* ========== پنل مدیریت (تب‌ها و جدول) ========== */
+.tabs-container {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    border-radius: 12px 12px 0 0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+}
+
+.admin-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.admin-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 12px 16px;
+    text-align: right;
+}
+
+.admin-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table tr:hover {
+    background: #eff6ff;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.edit-btn {
+    color: #2563eb;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.delete-btn {
+    color: #ef4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+}
+
+.delete-btn:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+}
+
+.add-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* ========== مدال ========== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 20px;
+    border-radius: 24px 24px 0 0;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    display: flex;
+    gap: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ========== آلرت ========== */
+.alert {
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.alert-success {
+    background: #d1fae5;
+    border-right: 4px solid #10b981;
+    color: #065f46;
+}
+
+.alert-error {
+    background: #fee2e2;
+    border-right: 4px solid #ef4444;
+    color: #991b1b;
+}
+
+/* ========== لودینگ ========== */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #dbeafe;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+/* ========== ریسپانسیو ========== */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .header-container {
+        flex-direction: column;
+    }
+    
+    .container {
+        padding: 20px 16px;
+    }
+    
+    .page-title h2 {
+        font-size: 24px;
+    }
+    
+    .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    button, 
+    [onclick] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .admin-table {
+        overflow-x: auto;
+    }
+    
+    .admin-table table {
+        min-width: 600px;
+    }
+}

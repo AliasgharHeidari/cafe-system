@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود به پنل مدیریت | کافه دلنشین</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-logo">
+                <i class="fas fa-mug-hot"></i>
+                <h1>کافه دلنشین</h1>
+            </div>
+            <div class="header-buttons">
+                <a href="index.html" class="header-btn header-btn-feedback">
+                    <i class="fas fa-arrow-right"></i> بازگشت به منو
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-card fade-in-up" style="max-width: 450px;">
+            <div class="form-header">
+                <i class="fas fa-user-shield"></i>
+                <h1>پنل مدیریت</h1>
+                <p>لطفاً اطلاعات خود را وارد کنید</p>
+            </div>
+            
+            <form id="loginForm" class="form-body">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> نام کاربری</label>
+                    <input type="text" id="username" required placeholder="نام کاربری خود را وارد کنید">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> رمز عبور</label>
+                    <input type="password" id="password" required placeholder="رمز عبور خود را وارد کنید">
+                </div>
+                
+                <button type="submit" id="loginBtn" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i> ورود به پنل
+                </button>
+            </form>
+        </div>
+        
+        <div id="errorMessage" class="alert alert-error" style="display: none; margin-top: 20px; text-align: center;">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorText"></span>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <i class="fas fa-mug-hot"></i>
+        <p>&copy; 2025 کافه دلنشین. تمامی حقوق محفوظ است.</p>
+        <p style="color: #9ca3af; font-size: 14px;">ما را در اینستاگرام دنبال کنید</p>
+        <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </footer>
+
+    <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:4000';
+        
+        // بررسی اگر قبلاً وارد شده بود
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+            window.location.href = 'admin.html';
+        }
+        
+        const form = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showError('لطفاً همه فیلدها را پر کنید');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال بررسی...';
+            hideError();
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('adminUsername', username);
+                    window.location.href = 'admin.html';
+                } else {
+                    showError(data.error || 'نام کاربری یا رمز عبور اشتباه است');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('مشکل در ارتباط با سرور');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ورود به پنل';
+            }
+        });
+        
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

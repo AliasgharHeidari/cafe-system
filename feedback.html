@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظرات و پیشنهادات | کافه دلنشین</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-logo">
+                <i class="fas fa-mug-hot"></i>
+                <h1>کافه دلنشین</h1>
+            </div>
+            <div class="header-buttons">
+                <a href="index.html" class="header-btn header-btn-feedback">
+                    <i class="fas fa-arrow-right"></i> بازگشت به منو
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-card fade-in-up">
+            <div class="form-header">
+                <i class="fas fa-comment-dots"></i>
+                <h1>نظرات و پیشنهادات شما</h1>
+                <p>نظر شما برای ما ارزشمند است</p>
+            </div>
+            
+            <form id="feedbackForm" class="form-body">
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> موضوع</label>
+                    <input type="text" id="subject" required placeholder="مثال: پیشنهاد برای منو، انتقاد از خدمات، ...">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-pen"></i> متن نظر</label>
+                    <textarea id="message" rows="6" required placeholder="لطفاً نظر خود را با ما به اشتراک بگذارید..."></textarea>
+                </div>
+                
+                <button type="submit" id="submitBtn" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> ارسال نظر
+                </button>
+            </form>
+        </div>
+        
+        <div id="successMessage" class="alert alert-success" style="display: none; margin-top: 20px; text-align: center;">
+            <i class="fas fa-check-circle"></i> نظر شما با موفقیت ثبت شد. ممنون از همراهی شما!
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <i class="fas fa-mug-hot"></i>
+        <p>&copy; 2025 کافه دلنشین. تمامی حقوق محفوظ است.</p>
+        <p style="color: #9ca3af; font-size: 14px;">ما را در اینستاگرام دنبال کنید</p>
+        <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </footer>
+
+    <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:4000';
+        
+        const form = document.getElementById('feedbackForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMessage');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+            
+            if (!subject || !message) {
+                alert('لطفاً همه فیلدها را پر کنید');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ارسال...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject, message })
+                });
+                
+                if (response.ok) {
+                    form.reset();
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'خطا در ارسال نظر');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('مشکل در ارتباط با سرور');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ارسال نظر';
+            }
+        });
+        
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
