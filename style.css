@@ -102,18 +102,6 @@ body {
     50% { transform: translateY(-10px); }
 }
 
-@keyframes borderPulse {
-    0% {
-        border-bottom-color: rgba(45, 187, 235, 0.2);
-    }
-    60% {
-        border-bottom-color: rgba(24, 108, 245, 0.6);
-    }
-    100% {
-        border-bottom-color: rgba(45, 187, 235, 0.2);
-    }
-}
-
 /* ========== کلاس‌های انیمیشن ========== */
 .fade-in-up { animation: fadeInUp 0.6s ease-out; }
 .slide-in-right { animation: slideInRight 0.5s ease-out; }
@@ -122,17 +110,41 @@ body {
 .text-glow { animation: textGlow 2s ease-in-out infinite; }
 .float { animation: float 3s ease-in-out infinite; }
 
-/* ========== هدر با درخشش ========== */
+/* ========== هدر با ظاهر کارت شناور ========== */
 .main-header {
-    background: linear-gradient(135deg, #0f172a, #1e1b4b);
-    padding: 12px 16px;
-    border-bottom: 3px solid rgba(59, 130, 246, 0.3);
-    animation: borderPulse 3s ease infinite;
-    position: relative;
+    background: rgba(25, 38, 68, 0.70);
+    backdrop-filter: blur(6px);
+    padding: 12px 24px;
+    position: sticky;
+    top: 20px;
+    z-index: 50;
+    width: calc(100% - 40px);
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 60px;
+    box-shadow: 0 8px 25px rgba(4, 102, 214, 0.1), 0 0 15px rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* افکت اسکرول - وقتی پایین میری هدر جمع‌تر میشه */
+.main-header.scrolled {
+    padding: 8px 20px;
+    top: 10px;
+    width: calc(100% - 60px);
+    backdrop-filter: blur(15px);
+    background: rgba(15, 23, 42, 0.95);
+}
+
+/* هاور روی هدر */
+.main-header:hover {
+    background: rgba(16, 35, 78, 0.80);
+    box-shadow: 0 12px 30px rgba(26, 63, 183, 0.3), 0 0 20px rgba(59, 130, 246, 0.4);
+    border-color: rgba(59, 130, 246, 0.5);
 }
 
 .header-container {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -145,7 +157,6 @@ body {
     align-items: center;
     gap: 12px;
 }
-
 
 .header-logo i {
     font-size: 28px;
@@ -182,31 +193,40 @@ body {
     align-items: center;
     gap: 8px;
     font-weight: bold;
-    background: rgba(255, 255, 255, 0.1);  /* شفاف سفید */
-    backdrop-filter: blur(10px);           /* افکت شیشه‌ای */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .header-btn-login {
-    background: linear-gradient(135deg, #334155, #1e293b);
+    background: rgba(51, 65, 85, 0.4);
     color: white;
 }
 
 .header-btn-login:hover {
-    background: linear-gradient(135deg, #6a7d97, #566b89);
+    background: rgba(100, 116, 139, 0.6);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* ========== ریسپانسیو برای موبایل - دکمه لاگین سمت چپ میمونه ========== */
+/* ========== ریسپانسیو برای موبایل ========== */
 @media (max-width: 768px) {
     .main-header {
-        padding: 10px 12px;
+        width: calc(100% - 20px);
+        top: 10px;
+        padding: 8px 16px;
+        border-radius: 50px;
+    }
+    
+    .main-header.scrolled {
+        width: calc(100% - 30px);
+        padding: 6px 12px;
+        top: 8px;
     }
     
     .header-container {
         justify-content: center;
-        min-height: 60px;
+        min-height: 50px;
     }
     
     .header-logo {
@@ -214,14 +234,13 @@ body {
     }
     
     .header-logo i {
-        font-size: 22px;
+        font-size: 23px;
     }
     
     .header-logo h1 {
-        font-size: 26px;
+        font-size: 20px;
     }
     
-    /* دکمه لاگین همچنان سمت چپ میمونه */
     .header-buttons {
         position: absolute;
         left: 0;
@@ -230,12 +249,27 @@ body {
     }
     
     .header-btn {
-        padding: 14px 18px;
-        font-size: 12px;
+        padding: 12px 16px;
+        font-size: 11px;
     }
     
     .header-btn i {
         font-size: 12px;
+    }
+}
+
+/* ========== صفحه عریض ========== */
+@media (min-width: 1200px) {
+    .main-header {
+        width: calc(100% - 80px);
+    }
+    
+    .container {
+        max-width: 1400px;
+    }
+    
+    .admin-card {
+        overflow-x: auto;
     }
 }
 
@@ -301,10 +335,16 @@ body {
 }
 
 .product-card:hover {
-  background: linear-gradient(120deg,#342455, #0e3462, #0b175b);
+    background: linear-gradient(120deg, #342455, #0e3462, #0b175b);
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(37, 99, 235, 0.4), 0 0 20px rgba(59, 130, 246, 0.3);
     border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* حالت لمس در موبایل */
+.product-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
 }
 
 .product-image {
@@ -1103,16 +1143,5 @@ body {
         font-size: 10px;
         padding: 6px 12px;
         white-space: nowrap;
-    }
-}
-
-/* ========== ریسپانسیو برای صفحه عریض ========== */
-@media (min-width: 1200px) {
-    .admin-card {
-        overflow-x: auto;
-    }
-    
-    .container {
-        max-width: 1400px;
     }
 }
