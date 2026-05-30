@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت | کافه دلنشین</title>
+    <title>پنل مدیریت | کافه بویز</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -13,13 +13,13 @@
         <div class="header-container">
             <div class="header-logo">
                 <i class="fas fa-mug-hot"></i>
-                <h1>پنل مدیریت کافه</h1>
+                <h1>پنل مدیریت</h1>
             </div>
             <div class="header-buttons">
-                <span style="background: #1e40af; padding: 8px 16px; border-radius: 9999px; font-size: 14px;">
+                <span class="user-badge">
                     <i class="fas fa-user"></i> <span id="usernameDisplay">ادمین</span>
                 </span>
-                <button onclick="logout()" style="background: #dc2626; color: white; border: none; padding: 8px 20px; border-radius: 9999px; cursor: pointer;">
+                <button onclick="logout()" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i> خروج
                 </button>
             </div>
@@ -44,9 +44,9 @@
             </button>
             <div class="admin-card">
                 <div id="productsList" class="admin-table">
-                    <div style="text-align: center; padding: 48px;">
+                    <div class="loading-container">
                         <div class="loading-spinner"></div>
-                        <p style="margin-top: 16px;">در حال بارگذاری محصولات...</p>
+                        <p>در حال بارگذاری محصولات...</p>
                     </div>
                 </div>
             </div>
@@ -56,9 +56,9 @@
         <div id="feedbacksTab" style="display: none;">
             <div class="admin-card">
                 <div id="feedbacksList" class="admin-table">
-                    <div style="text-align: center; padding: 48px;">
+                    <div class="loading-container">
                         <div class="loading-spinner"></div>
-                        <p style="margin-top: 16px;">در حال بارگذاری بازخوردها...</p>
+                        <p>در حال بارگذاری بازخوردها...</p>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@
                     </div>
                     <div class="form-group">
                         <label>قیمت (تومان) *</label>
-                        <input type="number" id="productPrice" required>
+                        <input type="text" id="productPrice" required placeholder="مثال: 35000 یا ۳۵۰۰۰">
                     </div>
                     <div class="form-group">
                         <label>توضیحات</label>
@@ -93,11 +93,16 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn-submit" style="flex: 1;">ذخیره</button>
-                    <button type="button" onclick="closeModal()" style="flex: 1; background: #9ca3af; color: white; border: none; border-radius: 12px; cursor: pointer;">انصراف</button>
+                    <button type="button" onclick="closeModal()" class="cancel-btn">انصراف</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <footer class="main-footer">
+        <i class="fas fa-mug-hot"></i>
+        <p>&copy; کافه بویز. تمامی حقوق محفوظ است.</p>
+    </footer>
 
     <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
         <i class="fas fa-arrow-up"></i>
@@ -105,6 +110,39 @@
 
     <script>
         const API_BASE = 'http://localhost:4000';
+        
+        // ========== تبدیل اعداد فارسی/عربی به انگلیسی ==========
+        function toEnglishNumber(input) {
+            if (!input && input !== 0) return '';
+            
+            const persianNumbers = {
+                '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+                '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
+                '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+                '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
+            };
+            
+            return String(input).replace(/[۰-۹٠-٩]/g, function(match) {
+                return persianNumbers[match];
+            });
+        }
+        
+        // ========== تنظیم تبدیل خودکار برای فیلد قیمت ==========
+        function setupPriceInput() {
+            const priceInput = document.getElementById('productPrice');
+            if (priceInput) {
+                // حذف event listener قبلی (اگر وجود داشته)
+                const newInput = priceInput.cloneNode(true);
+                priceInput.parentNode.replaceChild(newInput, priceInput);
+                
+                newInput.addEventListener('input', function(e) {
+                    this.value = toEnglishNumber(this.value);
+                });
+                
+                // آپدیت مرجع
+                document.getElementById('productPrice');
+            }
+        }
         
         // بررسی احراز هویت
         const token = localStorage.getItem('adminToken');
@@ -158,12 +196,12 @@
         
         function showPrice(price) {
             if (price && price > 0) return price.toLocaleString() + ' تومان';
-            return 'نامشخص';
+            return 'تماس بگیرید';
         }
         
         async function loadProducts() {
             const container = document.getElementById('productsList');
-            container.innerHTML = '<div style="text-align: center; padding: 48px;"><div class="loading-spinner"></div><p style="margin-top: 16px;">در حال بارگذاری...</p></div>';
+            container.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><p>در حال بارگذاری محصولات...</p></div>';
             
             try {
                 const response = await fetch(`${API_BASE}/panel/product`, { headers: getAuthHeaders() });
@@ -171,8 +209,9 @@
                 if (!response.ok) throw new Error(`خطا: ${response.status}`);
                 
                 const products = await response.json();
+                
                 if (!products || products.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; padding: 48px;"><p>هیچ محصولی یافت نشد</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-coffee"></i><p>هیچ محصولی یافت نشد</p><button class="add-btn" onclick="showAddProductModal()">افزودن محصول جدید</button></div>';
                     return;
                 }
                 
@@ -188,27 +227,34 @@
                     const price = p.price || p.Price || 0;
                     const imageLink = p.imageLink || p.ImageLink || '';
                     
-                    html += `<tr>
-                        <td>${imageLink ? `<img src="${imageLink}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">` : '<i class="fas fa-image" style="font-size: 24px; color: #9ca3af;"></i>'}</td>
-                        <td style="font-weight: bold;">${safeText(title)}</td>
-                        <td>${showPrice(price)}</td>
-                        <td class="admin-actions">
-                            <button class="edit-btn" onclick="editProduct(${id})"><i class="fas fa-edit"></i></button>
-                            <button class="delete-btn" onclick="deleteProduct(${id})"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
+                    html += `
+                        <tr>
+                            <td class="product-image-cell">
+                                ${imageLink ? 
+                                    `<img src="${imageLink}" class="product-thumb" onerror="this.src='https://placehold.co/50x50?text=No+Image'">` : 
+                                    '<i class="fas fa-image" style="font-size: 24px; color: #475569;"></i>'
+                                }
+                            </td>
+                            <td class="product-title-cell">${safeText(title)}</td>
+                            <td class="product-price-cell">${showPrice(price)}</td>
+                            <td class="product-actions-cell">
+                                <button class="edit-btn" onclick="editProduct(${id})"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" onclick="deleteProduct(${id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                         </tr>
+                    `;
                 }
                 
                 html += `</tbody></table>`;
                 container.innerHTML = html;
             } catch (error) {
-                container.innerHTML = `<div style="text-align: center; padding: 48px; color: #ef4444;">خطا: ${error.message}</div>`;
+                container.innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>خطا: ${error.message}</p><button onclick="loadProducts()" class="retry-btn">تلاش مجدد</button></div>`;
             }
         }
         
         async function loadFeedbacks() {
             const container = document.getElementById('feedbacksList');
-            container.innerHTML = '<div style="text-align: center; padding: 48px;"><div class="loading-spinner"></div><p style="margin-top: 16px;">در حال بارگذاری...</p></div>';
+            container.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><p>در حال بارگذاری بازخوردها...</p></div>';
             
             try {
                 const response = await fetch(`${API_BASE}/panel/feedback`, { headers: getAuthHeaders() });
@@ -216,12 +262,13 @@
                 if (!response.ok) throw new Error(`خطا: ${response.status}`);
                 
                 const feedbacks = await response.json();
+                
                 if (!feedbacks || feedbacks.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; padding: 48px;"><p>هیچ بازخوردی یافت نشد</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>هیچ بازخوردی یافت نشد</p></div>';
                     return;
                 }
                 
-                let html = '<div style="padding: 16px;">';
+                let html = '<div class="feedback-list">';
                 for (const fb of feedbacks) {
                     const id = fb.id || fb.ID;
                     const subject = fb.subject || fb.Subject || 'بدون موضوع';
@@ -229,11 +276,11 @@
                     const date = new Date(fb.createdAt || fb.CreatedAt).toLocaleDateString('fa-IR');
                     
                     html += `
-                        <div style="border-bottom: 1px solid #e5e7eb; padding: 16px; display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div>
-                                <h3 style="font-weight: bold; color: #2563eb;">${safeText(subject)}</h3>
-                                <p style="color: #6b7280; margin-top: 8px;">${safeText(message)}</p>
-                                <p style="color: #9ca3af; font-size: 12px; margin-top: 8px;"><i class="fas fa-calendar"></i> ${date}</p>
+                        <div class="feedback-item">
+                            <div class="feedback-content">
+                                <h3><i class="fas fa-tag"></i> ${safeText(subject)}</h3>
+                                <p>${safeText(message)}</p>
+                                <span class="feedback-date"><i class="fas fa-calendar"></i> ${date}</span>
                             </div>
                             <button class="delete-btn" onclick="deleteFeedback(${id})"><i class="fas fa-trash"></i></button>
                         </div>
@@ -242,7 +289,7 @@
                 html += '</div>';
                 container.innerHTML = html;
             } catch (error) {
-                container.innerHTML = `<div style="text-align: center; padding: 48px; color: #ef4444;">خطا: ${error.message}</div>`;
+                container.innerHTML = `<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>خطا: ${error.message}</p><button onclick="loadFeedbacks()" class="retry-btn">تلاش مجدد</button></div>`;
             }
         }
         
@@ -251,6 +298,7 @@
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
             document.getElementById('productModal').style.display = 'flex';
+            setupPriceInput();
         }
         
         async function editProduct(id) {
@@ -266,6 +314,7 @@
                     document.getElementById('productDescription').value = product.description || product.Description || '';
                     document.getElementById('productImageLink').value = product.imageLink || product.ImageLink || '';
                     document.getElementById('productModal').style.display = 'flex';
+                    setupPriceInput();
                 }
             } catch (error) {
                 alert('خطا در بارگذاری اطلاعات محصول');
@@ -312,7 +361,12 @@
             e.preventDefault();
             const productId = document.getElementById('productId').value;
             const title = document.getElementById('productTitle').value;
-            const price = parseFloat(document.getElementById('productPrice').value);
+            let priceValue = document.getElementById('productPrice').value;
+            
+            // تبدیل قیمت به عدد انگلیسی
+            priceValue = toEnglishNumber(priceValue);
+            const price = parseFloat(priceValue) || 0;
+            
             const description = document.getElementById('productDescription').value;
             const imageLink = document.getElementById('productImageLink').value;
             const isEdit = productId !== '';

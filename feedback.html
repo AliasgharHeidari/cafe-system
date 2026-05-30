@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظرات و پیشنهادات | کافه دلنشین</title>
+    <title>نظرات و پیشنهادات | کافه بویز</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -13,7 +13,7 @@
         <div class="header-container">
             <div class="header-logo">
                 <i class="fas fa-mug-hot"></i>
-                <h1>کافه دلنشین</h1>
+                <h1>کافه بویز</h1>
             </div>
             <div class="header-buttons">
                 <a href="index.html" class="header-btn header-btn-feedback">
@@ -39,10 +39,43 @@
                 
                 <div class="form-group">
                     <label><i class="fas fa-pen"></i> متن نظر</label>
-                    <textarea id="message" rows="6" required placeholder="لطفاً نظر خود را با ما به اشتراک بگذارید..."></textarea>
+                    <textarea id="message" rows="5" required placeholder="لطفاً نظر خود را با ما به اشتراک بگذارید..."></textarea>
                 </div>
                 
-                <button type="submit" id="submitBtn" class="btn-submit">
+                <!-- تایمر انتظار -->
+                <div class="form-group timer-section">
+                    <div class="timer-container" id="timerContainer">
+                        <div class="timer-icon">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="timer-text">
+                            <span id="timerMessage">لطفاً چند لحظه صبر کنید...</span>
+                            <div class="timer-progress">
+                                <div class="timer-progress-bar" id="timerProgress"></div>
+                            </div>
+                            <div class="timer-countdown" id="timerCountdown">20 ثانیه</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- بخش کپچا (ابتدا غیرفعال) -->
+                <div class="form-group captcha-section" id="captchaSection" style="opacity: 0.5; pointer-events: none;">
+                    <label><i class="fas fa-shield-alt"></i> کد امنیتی</label>
+                    <div class="captcha-container">
+                        <div class="captcha-box" id="captchaBox">
+                            <span id="captchaQuestion"></span>
+                        </div>
+                        <button type="button" class="captcha-refresh" onclick="generateCaptcha()" disabled>
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <input type="text" id="captchaInput" placeholder="نتیجه را وارد کنید" required disabled>
+                    <small style="display: block; margin-top: 8px; color: #94a3b8; font-size: 12px;">
+                        <i class="fas fa-info-circle"></i> پس از ۲۰ ثانیه فعال می‌شود
+                    </small>
+                </div>
+                
+                <button type="submit" id="submitBtn" class="btn-submit" disabled>
                     <i class="fas fa-paper-plane"></i> ارسال نظر
                 </button>
             </form>
@@ -51,12 +84,16 @@
         <div id="successMessage" class="alert alert-success" style="display: none; margin-top: 20px; text-align: center;">
             <i class="fas fa-check-circle"></i> نظر شما با موفقیت ثبت شد. ممنون از همراهی شما!
         </div>
+        
+        <div id="errorMessage" class="alert alert-error" style="display: none; margin-top: 20px; text-align: center;">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorText"></span>
+        </div>
     </main>
 
     <footer class="main-footer">
         <i class="fas fa-mug-hot"></i>
-        <p>&copy; 2025 کافه دلنشین. تمامی حقوق محفوظ است.</p>
-        <p style="color: #9ca3af; font-size: 14px;">ما را در اینستاگرام دنبال کنید</p>
+        <p>&copy; کافه بویز. تمامی حقوق محفوظ است.</p>
+        <p style="color: #9ca3af; font-size: 14px;">ما را در فضای مجازی دنبال کنید</p>
         <div class="social-links">
             <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
             <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
@@ -71,23 +108,176 @@
     <script>
         const API_BASE = 'http://localhost:4000';
         
+        // ========== تایمر ۱۰ ثانیه ==========
+        let timerSeconds = 20;
+        let timerInterval = null;
+        let isTimerActive = true;
+        
+        // ========== تبدیل اعداد فارسی به انگلیسی ==========
+        function persianToEnglishNumber(input) {
+            const persianNumbers = {
+                '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+                '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
+            };
+            return String(input).replace(/[۰-۹]/g, function(match) {
+                return persianNumbers[match];
+            });
+        }
+        
+        // ========== تبدیل اعداد انگلیسی به فارسی ==========
+        function englishToPersianNumber(input) {
+            const englishNumbers = {
+                '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+                '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+            };
+            return String(input).replace(/[0-9]/g, function(match) {
+                return englishNumbers[match];
+            });
+        }
+        
+        // ========== کپچا ==========
+        let captchaResult = 0;
+        
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 20) + 1;
+            const num2 = Math.floor(Math.random() * 20) + 1;
+            const operators = ['+', '-', '×'];
+            const operator = operators[Math.floor(Math.random() * operators.length)];
+            
+            let question = '';
+            let result = 0;
+            
+            switch(operator) {
+                case '+':
+                    question = `${englishToPersianNumber(num1)} + ${englishToPersianNumber(num2)}`;
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    question = `${englishToPersianNumber(num1)} - ${englishToPersianNumber(num2)}`;
+                    result = num1 - num2;
+                    break;
+                case '×':
+                    question = `${englishToPersianNumber(num1)} × ${englishToPersianNumber(num2)}`;
+                    result = num1 * num2;
+                    break;
+            }
+            
+            document.getElementById('captchaQuestion').textContent = question + ' = ?';
+            captchaResult = result;
+        }
+        
+        function checkCaptcha() {
+            let userAnswer = document.getElementById('captchaInput').value.trim();
+            if (!userAnswer) return false;
+            userAnswer = persianToEnglishNumber(userAnswer);
+            const userNumber = parseInt(userAnswer);
+            return !isNaN(userNumber) && userNumber === captchaResult;
+        }
+        
+        // ========== فعال کردن بخش‌های فرم بعد از تایمر ==========
+        function enableFormAfterTimer() {
+            isTimerActive = false;
+            
+            // فعال کردن کپچا
+            const captchaSection = document.getElementById('captchaSection');
+            captchaSection.style.opacity = '1';
+            captchaSection.style.pointerEvents = 'auto';
+            
+            // فعال کردن دکمه رفرش کپچا
+            document.querySelector('.captcha-refresh').disabled = false;
+            
+            // فعال کردن اینپوت کپچا
+            document.getElementById('captchaInput').disabled = false;
+            
+            // فعال کردن دکمه ارسال
+            document.getElementById('submitBtn').disabled = false;
+            
+            // تولید کپچا
+            generateCaptcha();
+            
+            // تغییر پیام تایمر
+            const timerMessage = document.getElementById('timerMessage');
+            timerMessage.innerHTML = '<i class="fas fa-check-circle"></i> اکنون می‌توانید نظر خود را ارسال کنید';
+            
+            const timerCountdown = document.getElementById('timerCountdown');
+            timerCountdown.style.color = '#10b981';
+            timerCountdown.innerHTML = 'فعال شد ✓';
+            
+            const timerProgress = document.getElementById('timerProgress');
+            timerProgress.style.width = '100%';
+            timerProgress.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+        }
+        
+        // ========== شروع تایمر ==========
+        function startTimer() {
+            const timerCountdown = document.getElementById('timerCountdown');
+            const timerProgress = document.getElementById('timerProgress');
+            
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    
+                    // به‌روزرسانی شمارنده
+                    const persianSeconds = englishToPersianNumber(timerSeconds);
+                    timerCountdown.innerHTML = `${persianSeconds} ثانیه`;
+                    
+                    // به‌روزرسانی نوار پیشرفت
+                    const progressPercent = ((20 - timerSeconds) / 20) * 100;
+                    timerProgress.style.width = `${progressPercent}%`;
+                    
+                    // تغییر رنگ نوار پیشرفت
+                    if (timerSeconds <= 3) {
+                        timerProgress.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
+                    }
+                } else {
+                    clearInterval(timerInterval);
+                    enableFormAfterTimer();
+                }
+            }, 1000);
+        }
+        
+        // ========== بقیه کدها ==========
         const form = document.getElementById('feedbackForm');
         const submitBtn = document.getElementById('submitBtn');
         const successMsg = document.getElementById('successMessage');
+        const errorMsg = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        // شروع تایمر
+        startTimer();
         
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // بررسی اگر تایمر هنوز فعاله
+            if (isTimerActive) {
+                showError('لطفاً ۱۰ ثانیه صبر کنید');
+                return;
+            }
             
             const subject = document.getElementById('subject').value.trim();
             const message = document.getElementById('message').value.trim();
             
             if (!subject || !message) {
-                alert('لطفاً همه فیلدها را پر کنید');
+                showError('لطفاً همه فیلدها را پر کنید');
+                return;
+            }
+            
+            if (!document.getElementById('captchaInput').value.trim()) {
+                showError('لطفاً کد امنیتی را وارد کنید');
+                return;
+            }
+            
+            if (!checkCaptcha()) {
+                showError('کد امنیتی اشتباه است');
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
                 return;
             }
             
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ارسال...';
+            hideMessages();
             
             try {
                 const response = await fetch(`${API_BASE}/feedback`, {
@@ -98,22 +288,36 @@
                 
                 if (response.ok) {
                     form.reset();
+                    generateCaptcha();
                     successMsg.style.display = 'block';
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 2000);
                 } else {
                     const data = await response.json();
-                    alert(data.error || 'خطا در ارسال نظر');
+                    showError(data.error || 'خطا در ارسال نظر');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('مشکل در ارتباط با سرور');
+                showError('مشکل در ارتباط با سرور');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ارسال نظر';
             }
         });
+        
+        function showError(message) {
+            errorText.textContent = message;
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 5000);
+        }
+        
+        function hideMessages() {
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+        }
         
         window.addEventListener('scroll', function() {
             const backToTop = document.getElementById('backToTop');

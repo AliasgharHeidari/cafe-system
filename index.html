@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منوی کافه | کافه دلنشین</title>
+    <title>منوی کافه | کافه بویز</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=2">
 </head>
@@ -13,28 +13,25 @@
         <div class="header-container">
             <div class="header-logo">
                 <i class="fas fa-mug-hot"></i>
-                <h1>کافه دلنشین</h1>
+                <h1>cafe boys</h1>
             </div>
             <div class="header-buttons">
-                <a href="feedback.html" class="header-btn header-btn-feedback">
-                    <i class="fas fa-comment-dots"></i> نظرات شما
-                </a>
                 <a href="login.html" class="header-btn header-btn-login">
-                    <i class="fas fa-lock"></i> ورود مدیریت
+                    <i class="fas fa-lock"></i>
                 </a>
             </div>
         </div>
     </header>
 
-    <div class="promo-banner">
+<!--     <div class="promo-banner">
         <i class="fas fa-truck"></i> سفارش‌های بالای ۲۰۰ هزار تومان، ارسال رایگان
-    </div>
+    </div> -->
 
     <main class="container">
         <div class="page-title fade-in-up">
             <h2>منوی کافه</h2>
             <div class="title-line"></div>
-            <p>طعم واقعی قهوه را با ما تجربه کنید</p>
+ <!--            <p>طعم واقعی قهوه را با ما تجربه کنید</p> -->
         </div>
 
         <div id="products-container" class="products-grid">
@@ -47,8 +44,8 @@
 
     <footer class="main-footer">
         <i class="fas fa-mug-hot"></i>
-        <p>&copy; 2025 کافه دلنشین. تمامی حقوق محفوظ است.</p>
-        <p style="color: #9ca3af; font-size: 14px;">ما را در اینستاگرام دنبال کنید</p>
+        <p>&copy;کافه بویز. تمامی حقوق محفوظ است.</p>
+        <p style="color: #9ca3af; font-size: 14px;">ما را در فضای مجازی دنبال کنید</p>
         <div class="social-links">
             <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
             <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
@@ -129,5 +126,18 @@
         
         document.addEventListener('DOMContentLoaded', loadProducts);
     </script>
+
+    <!-- دکمه شناور نظرات -->
+<a href="feedback.html" class="feedback-fab" id="feedbackFab">
+    <i class="fas fa-comment-dots"></i>
+</a>
+
+<script>
+    // نمایش دکمه فقط در صفحاتی که feedback.html نیست
+    if (window.location.pathname.includes('feedback.html')) {
+        const fab = document.getElementById('feedbackFab');
+        if (fab) fab.style.display = 'none';
+    }
+</script>
 </body>
 </html>
